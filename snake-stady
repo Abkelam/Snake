@@ -1,0 +1,77 @@
+import pygame
+import random
+
+WIDTH = 800
+HEIGHT = 600
+BLOCK_SIZE = 20
+
+white = (255, 255, 255)
+black = (0, 0, 0)
+red = (255, 0, 0)
+green = (0, 255, 0)
+blue = (0, 0, 255)
+
+class Snake:
+    def __init__(self):
+        self.x = WIDTH // 2
+        self.y = HEIGHT // 2
+        self.size = 1
+        self.blocks = [(self.x, self.y)]
+        self.direction = (0, -BLOCK_SIZE)
+
+    def draw(self, surface):
+        for block in self.blocks:
+            pygame.draw.rect(surface, green, (block[0], block[1], BLOCK_SIZE, BLOCK_SIZE))
+
+    def move(self):
+        self.x += self.direction[0]
+        self.y += self.direction[1]
+
+        if (self.x, self.y) in self.blocks:
+            self.size = 1
+            self.blocks = [(self.x, self.y)]
+        else:
+            self.blocks.append((self.x, self.y))
+
+            if len(self.blocks) > self.size:
+                self.blocks.pop(0)
+
+    def change_direction(self, direction):
+        if direction == "UP" and self.direction != (0, BLOCK_SIZE):
+            self.direction = (0, -BLOCK_SIZE)
+        elif direction == "DOWN" and self.direction != (0, -BLOCK_SIZE):
+            self.direction = (0, BLOCK_SIZE)
+        elif direction == "LEFT" and self.direction != (BLOCK_SIZE, 0):
+            self.direction = (-BLOCK_SIZE, 0)
+        elif direction == "RIGHT" and self.direction != (-BLOCK_SIZE, 0):
+            self.direction = (BLOCK_SIZE, 0)
+
+class Food:
+    def __init__(self):
+        self.x = random.randint(0, WIDTH - BLOCK_SIZE)
+        self.y = random.randint(0, HEIGHT - BLOCK_SIZE)
+
+    def draw(self, surface):
+        pygame.draw.rect(surface, red, (self.x, self.y, BLOCK_SIZE, BLOCK_SIZE))
+
+def main():
+    pygame.init()
+    window = pygame.display.set_mode((WIDTH, HEIGHT))
+    pygame.display.set_caption("Snake Game")
+    clock = pygame.time.Clock()
+
+    snake = Snake()
+    food = Food()
+
+    running = True
+    while running:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_UP:
+                    snake.change_direction("UP")
+                elif event.key == pygame.K_DOWN:
+                    snake.change_direction("DOWN")
+                elif event.
